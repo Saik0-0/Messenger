@@ -5,6 +5,7 @@ import uuid
 from tkinter.messagebox import showerror, showinfo
 
 
+
 class Authorization:
     def __init__(self):
         self.pass_dict = self.load_data()
@@ -40,7 +41,7 @@ class Authorization:
                 self.save_data()
 
     # Вход пользователя
-    def sign_in(self, login_entry, pass_entry):
+    def sign_in(self, login_entry, pass_entry, messenger):
         login = login_entry.get()
         password = pass_entry.get()
 
@@ -48,16 +49,17 @@ class Authorization:
             if login not in self.pass_dict:
                 showerror('Error', 'You\'ve not authorised')
             else:
-                self.check_password(login, password)
+                self.check_password(login, password, messenger)
 
     # Проверка пароля
-    def check_password(self, login, password):
+    def check_password(self, login, password, messenger):
         stored_data = self.pass_dict[login]
         salt = stored_data['salt']
         password_hash = hashlib.md5((password + salt).encode()).hexdigest()
 
         if password_hash == stored_data['hash']:
             showinfo('Result', 'Password is correct, welcome!')
+            messenger.main_page_init_ui()
         else:
             showerror('Result', 'Password is wrong, try again.')
 

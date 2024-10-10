@@ -6,11 +6,11 @@ from Authorization import Authorization
 class Messenger:
     def __init__(self, root):
         self.root = root
-        self.init_ui()
+        self.auth_init_ui()
         self.auth = Authorization()
 
     # Инициализация пользовательского интерфейса
-    def init_ui(self):
+    def auth_init_ui(self):
         self.root.title('Messenger')
         self.root.geometry('450x600')
         self.root.resizable(False, False)
@@ -28,8 +28,14 @@ class Messenger:
         self.pass_entry.place(height=40, width=150, x=30, y=320)
 
         # Кнопки
-        Button(text='Sign in', font='Sylfaen', background='White', command=lambda: self.auth.sign_in(self.login_entry, self.pass_entry)).place(height=30, width=90, x=210, y=260)
+        Button(text='Sign in', font='Sylfaen', background='White', command=lambda: self.auth.sign_in(self.login_entry, self.pass_entry, self)).place(height=30, width=90, x=210, y=260)
         Button(text='Sign up', font='Sylfaen 12', background='White', command=lambda: self.auth.sign_up(self.login_entry, self.pass_entry)).place(height=25, width=80, x=215, y=310)
+
+    def main_page_init_ui(self):
+        self.root.title('Main Page')
+        self.root['bg'] = 'White'
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
 
 if __name__ == "__main__":
