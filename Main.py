@@ -108,20 +108,13 @@ class Authorization:
         self.forum_list = Frame(self.root, height=100, width=450)
         self.forum_list.pack(pady=20, padx=20)
 
-        add_forum_button = Button(self.root, text='Add forum', command=self.add_forum)
-        add_forum_button.pack(pady=10)
+        f1 = Button(self.forum_list, text='Forum 1', command=lambda: self.forum_page('Forum 1'))
+        f1.pack(fill='x')
+        f2 = Button(self.forum_list, text='Forum 2', command=lambda: self.forum_page('Forum 2'))
+        f2.pack(fill='x')
 
         logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
         logout_button.pack(pady=10)
-
-    def add_forum(self):
-        add_window = Toplevel(self.root)
-        add_window.title('Add forum')
-        Label(add_window, text='Enter forum\'s name:').pack(pady=10)
-        new_name_entry = Entry(add_window)
-        new_name_entry.pack(pady=10)
-
-
 
     def save_publication(self, text, forum_name):
         new_publ = Publication(self.username, text)
