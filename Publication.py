@@ -16,11 +16,11 @@ class Publication:
                 return {}
         return {}
 
-    def save_data(self):
+    def save_data(self, forum_name):
         curr_publ = self.open_data()
         if self.username in curr_publ.keys():
-            curr_publ[self.username].append(self.text)
+            curr_publ[self.username].append((self.text, forum_name))
         else:
-            curr_publ.setdefault(self.username, [self.text])
+            curr_publ.setdefault(self.username, [(self.text, forum_name)])
         with open('published.txt', 'w') as published_file:
             json.dump(curr_publ, published_file)

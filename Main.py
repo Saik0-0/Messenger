@@ -108,18 +108,24 @@ class Authorization:
         self.forum_list = Frame(self.root, height=100, width=450)
         self.forum_list.pack(pady=20, padx=20)
 
-        f1 = Button(self.forum_list, text='Форум 1', command=lambda: self.forum_page('Форум 1'))
-        f1.pack(fill='x')
-        f2 = Button(self.forum_list, text='Форум 2', command=lambda: self.forum_page('Форум 2'))
-        f2.pack(fill='x')
+        add_forum_button = Button(self.root, text='Add forum', command=self.add_forum)
+        add_forum_button.pack(pady=10)
 
         logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
         logout_button.pack(pady=10)
 
+    def add_forum(self):
+        add_window = Toplevel(self.root)
+        add_window.title('Add forum')
+        Label(add_window, text='Enter forum\'s name:').pack(pady=10)
+        new_name_entry = Entry(add_window)
+        new_name_entry.pack(pady=10)
 
-    def save_publication(self, text):
+
+
+    def save_publication(self, text, forum_name):
         new_publ = Publication(self.username, text)
-        new_publ.save_data()
+        new_publ.save_data(forum_name)
         self.publication_list.insert(END, f'{self.username}: {text}')
 
     def forum_page(self, forum_name):
@@ -130,12 +136,28 @@ class Authorization:
         self.publication_list = Listbox(self.root, font='Sylfaen', height=10, width=400)
         self.publication_list.pack(pady=20, padx=20)
 
+        if os.path.exists('published.txt'):
+            try:
+                with open('published.txt', 'r') as published_file:
+                    content = published_file.read().strip()
+                    if content != '':
+                        prev_publ = json.loads(content)
+                        empty_flag = 1
+                    else:
+                        empty_flag = 0
+            except (json.JSONDecodeError, FileNotFoundError):
+                prev_publ = {}
 
+        if empty_flag:
+            for user, publications in prev_publ.items():
+                for publication, publication_forum_name in publications:
+                    if forum_name == publication_forum_name:
+                        self.publication_list.insert(END, f'{user}: {publication}')
 
         entry = Entry(self.root)
         entry.pack(pady=10)
 
-        enter_button = Button(self.root, text='Enter', command=lambda: self.save_publication(entry.get()))
+        enter_button = Button(self.root, text='Enter', command=lambda: self.save_publication(entry.get(), forum_name))
         enter_button.pack(pady=0, padx=20)
 
         back_button = Button(self.root, text='Back', command=self.main_page_init_ui)
