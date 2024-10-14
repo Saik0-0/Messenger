@@ -5,6 +5,8 @@ import uuid
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 
+from Publication import Publication
+
 
 class Authorization:
     def __init__(self, root):
@@ -32,7 +34,7 @@ class Authorization:
         login = login_entry.get()
         password = pass_entry.get()
 
-        if self.validate_input(login, password):
+        if self.sintax_check(login, password):
             if login in self.pass_dict:
                 showerror('Error', 'You\'ve already authorised')
             else:
@@ -61,6 +63,7 @@ class Authorization:
 
         if password_hash == stored_data['hash']:
             showinfo('Result', 'Password is correct, welcome!')
+            self.username = login
             messenger.main_page_init_ui()
         else:
             showerror('Result', 'Password is wrong, try again.')
@@ -102,8 +105,41 @@ class Authorization:
         self.root.title('Forums')
         self.root['bg'] = 'Blue'
 
-        self.forum_list = Listbox(self.root, font='TimesNewRoman 12', height=10, width=450)
+        self.forum_list = Frame(self.root, height=100, width=450)
         self.forum_list.pack(pady=20, padx=20)
+
+        f1 = Button(self.forum_list, text='Форум 1', command=lambda: self.forum_page('Форум 1'))
+        f1.pack(fill='x')
+        f2 = Button(self.forum_list, text='Форум 2', command=lambda: self.forum_page('Форум 2'))
+        f2.pack(fill='x')
+
+        logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
+        logout_button.pack(pady=10)
+
+
+    def save_publication(self, text):
+        new_publ = Publication(self.username, text)
+        new_publ.save_data()
+        self.publication_list.insert(END, f'{self.username}: {text}')
+
+    def forum_page(self, forum_name):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.root.title(forum_name)
+        self.root['bg'] = 'White'
+        self.publication_list = Listbox(self.root, font='Sylfaen', height=10, width=400)
+        self.publication_list.pack(pady=20, padx=20)
+
+
+
+        entry = Entry(self.root)
+        entry.pack(pady=10)
+
+        enter_button = Button(self.root, text='Enter', command=lambda: self.save_publication(entry.get()))
+        enter_button.pack(pady=0, padx=20)
+
+        back_button = Button(self.root, text='Back', command=self.main_page_init_ui)
+        back_button.pack(pady=10)
 
         logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
         logout_button.pack(pady=10)
