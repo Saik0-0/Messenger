@@ -100,21 +100,10 @@ class Authorization:
         for widget in self.root.winfo_children():
             widget.destroy()
         self.root.title('Forums')
-        self.root['bg'] = 'White'
+        self.root['bg'] = 'Blue'
 
-        self.forum_list = Listbox(self.root, font='TimesNewRoman 12', height=10)
+        self.forum_list = Listbox(self.root, font='TimesNewRoman 12', height=10, width=450)
         self.forum_list.pack(pady=20, padx=20)
-
-        # Добавление форумов в список
-        self.forum_list.insert(END, 'Forum 1')
-        self.forum_list.insert(END, 'Forum 2')
-        self.forum_list.insert(END, 'Forum 3')
-
-        self.message_entry = Entry(self.root, justify=LEFT, font='TimesNewRoman 11')
-        self.message_entry.pack(pady=10, padx=20)
-
-        send_button = Button(self.root, text='Send')
-        send_button.pack(pady=10)
 
         logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
         logout_button.pack(pady=10)
