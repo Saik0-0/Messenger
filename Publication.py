@@ -3,9 +3,11 @@ import os.path
 
 
 class Publication:
-    def __init__(self, username, text):
+    def __init__(self, username, text, forum_name, time):
         self.username = username
         self.text = text
+        self.forum_name = forum_name
+        self.time = time
 
     def open_data(self):
         if os.path.exists('published.txt'):
@@ -16,11 +18,11 @@ class Publication:
                 return {}
         return {}
 
-    def save_data(self, forum_name):
+    def save_data(self):
         curr_publ = self.open_data()
         if self.username in curr_publ.keys():
-            curr_publ[self.username].append((self.text, forum_name))
+            curr_publ[self.username].append((self.text, self.forum_name, self.time))
         else:
-            curr_publ.setdefault(self.username, [(self.text, forum_name)])
+            curr_publ.setdefault(self.username, [(self.text, self.forum_name, self.time)])
         with open('published.txt', 'w') as published_file:
             json.dump(curr_publ, published_file)

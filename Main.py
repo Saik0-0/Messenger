@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import uuid
+from datetime import datetime
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 
@@ -117,9 +118,10 @@ class Authorization:
         logout_button.pack(pady=10)
 
     def save_publication(self, text, forum_name):
-        new_publ = Publication(self.username, text)
-        new_publ.save_data(forum_name)
-        self.publication_list.insert(END, f'{self.username}: {text}')
+        publ_time = datetime.now().strftime('%Y.%m.%d %H:%M')
+        new_publ = Publication(self.username, text, forum_name, publ_time)
+        new_publ.save_data()
+        self.publication_list.insert(END, f'[{publ_time}]{self.username}: {text}')
 
     def forum_page(self, forum_name):
         for widget in self.root.winfo_children():
@@ -143,9 +145,9 @@ class Authorization:
 
         if empty_flag:
             for user, publications in prev_publ.items():
-                for publication, publication_forum_name in publications:
+                for publication, publication_forum_name, publication_time in publications:
                     if forum_name == publication_forum_name:
-                        self.publication_list.insert(END, f'{user}: {publication}')
+                        self.publication_list.insert(END, f'[{publication_time}]{user}: {publication}')
 
         entry = Entry(self.root)
         entry.pack(pady=10)
