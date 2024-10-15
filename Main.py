@@ -118,7 +118,7 @@ class Authorization:
         logout_button.pack(pady=10)
 
     def save_publication(self, text, forum_name):
-        publ_time = datetime.now().strftime('%Y.%m.%d %H:%M')
+        publ_time = datetime.now().strftime('%Y.%m.%d %H:%M:%S')
         new_publ = Publication(self.username, text, forum_name, publ_time)
         new_publ.save_data()
         self.publication_list.insert(END, f'[{publ_time}]{self.username}: {text}')
@@ -136,18 +136,25 @@ class Authorization:
                 with open('published.txt', 'r') as published_file:
                     content = published_file.read().strip()
                     if content != '':
-                        prev_publ = json.loads(content)
+                        prev_publ_dict = json.loads(content)
                         empty_flag = 1
                     else:
                         empty_flag = 0
             except (json.JSONDecodeError, FileNotFoundError):
-                prev_publ = {}
+                prev_publ_dict = {}
+
+        prev_publ = []
 
         if empty_flag:
-            for user, publications in prev_publ.items():
+            for user, publications in prev_publ_dict.items():
                 for publication, publication_forum_name, publication_time in publications:
-                    if forum_name == publication_forum_name:
-                        self.publication_list.insert(END, f'[{publication_time}]{user}: {publication}')
+                    prev_publ.append((user, publication, publication_forum_name, publication_time))
+
+        prev_publ = sorted(prev_publ, key=lambda x: x[-1])
+
+        for user, publication, publication_forum_name, publication_time in prev_publ:
+            if forum_name == publication_forum_name:
+                self.publication_list.insert(END, f'[{publication_time}]{user}: {publication}')
 
         entry = Entry(self.root)
         entry.pack(pady=10)
