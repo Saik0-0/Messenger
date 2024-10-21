@@ -178,33 +178,33 @@ class Authorization:
                     self.publication_list.insert(END, f'    Comment: {comment}')
 
         #   Поле ввода для добавления публикации
-        entry = Entry(self.root)
-        entry.pack(pady=10)
+        self.entry = Entry(self.root)
+        self.entry.pack(pady=10)
 
         #   Кнопка добавления публикации
-        enter_button = Button(self.root, text='Enter', command=lambda: (self.save_publication(entry.get(), forum_name), entry.delete(first=0, last=END)))
-        enter_button.pack(pady=0, padx=20)
+        self.enter_button = Button(self.root, text='Enter', command=lambda: (self.save_publication(self.entry.get(), forum_name), self.entry.delete(first=0, last=END)))
+        self.enter_button.pack(pady=0, padx=20)
 
         # Поле для добавления комментария
-        comment_entry = Entry(self.root)
-        comment_entry.pack(pady=10)
+        self.comment_entry = Entry(self.root)
+        self.comment_entry.pack(pady=10)
 
         # Кнопка для добавления комментария к выбранной публикации
-        comment_button = Button(self.root, text='Add Comment',
-                                command=lambda: self.add_comment(comment_entry.get(), forum_name))
-        comment_button.pack(pady=5)
+        self.comment_button = Button(self.root, text='Add Comment',
+                                command=lambda: (self.add_comment(self.comment_entry.get(), forum_name), self.comment_entry.delete(first=0, last=END)))
+        self.comment_button.pack(pady=5)
 
         # Кнопка для лайков
-        like_button = Button(self.root, text='Like', command=lambda: self.like_post(forum_name))
-        like_button.pack(pady=5)
+        self.like_button = Button(self.root, text='Like', command=lambda: self.like_post(forum_name))
+        self.like_button.pack(pady=5)
 
         #   Кнопка возвращения в окно с выбором форума
-        back_button = Button(self.root, text='Back', command=self.main_page_init_ui)
-        back_button.pack(pady=10)
+        self.back_button = Button(self.root, text='Back', command=self.main_page_init_ui)
+        self.back_button.pack(pady=10)
 
         #   Кнопка выхода в окно авторизации
-        logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
-        logout_button.pack(pady=10)
+        self.logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
+        self.logout_button.pack(pady=10)
 
     def like_post(self, forum_name):
         selected = self.publication_list.curselection()
@@ -212,37 +212,23 @@ class Authorization:
             index = selected[0]
             # Загружаем данные публикаций из файла
             prev_publ_dict = self.load_publications()
-            prev_publ_tuples = []
+
+            # Проходим по публикациям и находим нужную по индексу
+            count = 0
             for user, publications in prev_publ_dict.items():
                 for publication in publications:
-                    if forum_name == publication['forum_name']:
-                        prev_publ_tuples.append((
-                            user, publication['text'], publication['forum_name'],
-                            publication['time'], publication['likes'], publication['comments']
-                        ))
-            prev_publ = sorted(prev_publ_tuples, key=lambda x: x[3])
-
-
-
-            # # Проходим по публикациям и находим нужную по индексу
-            # count = 0
-            # for user, publications in prev_publ_dict.items():
-            #     for publication in publications:
-            #         if publication['forum_name'] == forum_name:
-            #             if count == index:
-            #                 publication['likes'] += 1  # Увеличиваем количество лайков
-            #                 self.publication_list.delete(index)
-            #                 self.publication_list.insert(index,
-            #                                              f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
-            #                 break
-            #             count += 1
-
-
+                    if publication['forum_name'] == forum_name:
+                        if count == index:
+                            publication['likes'] += 1  # Увеличиваем количество лайков
+                            self.publication_list.delete(index)
+                            self.publication_list.insert(index,
+                                                         f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
+                            break
+                        count += (1 + len(publication['comments']))
             # Сохраняем обновлённые данные
             self.save_publications(prev_publ_dict)
 
     def load_publications(self):
-        """Загружает публикации из файла published.txt"""
         if os.path.exists('published.txt'):
             try:
                 with open('published.txt', 'r') as published_file:
@@ -254,7 +240,6 @@ class Authorization:
         return {}
 
     def save_publications(self, data):
-        """Сохраняет публикации в файл published.txt"""
         with open('published.txt', 'w') as published_file:
             json.dump(data, published_file)
 
@@ -271,15 +256,18 @@ class Authorization:
                 for publication in publications:
                     if publication['forum_name'] == forum_name:
                         if count == index:
+                            self.publication_list.delete(index, index + len(publication['comments']))
+
                             publication['comments'].append(comment_text)  # Добавляем комментарий
-                            self.publication_list.delete(index)
+
                             self.publication_list.insert(index,
                                                          f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
                             # Отображаем комментарии
                             for comment in publication['comments']:
-                                self.publication_list.insert(END, f'    Comment: {comment}')
+                                index += 1
+                                self.publication_list.insert(index, f'    Comment: {comment}')
                             break
-                        count += 1
+                        count += (1 + len(publication['comments']))
 
             # Сохраняем обновлённые данные
             self.save_publications(prev_publ_dict)
