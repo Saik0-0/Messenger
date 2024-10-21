@@ -116,7 +116,7 @@ class Authorization:
     def main_page_init_ui(self):
         for widget in self.root.winfo_children():
             widget.destroy()
-        self.root.geometry('700x500')
+        self.root.geometry('200x300')
         self.root.title('Forums')
         self.root['bg'] = '#7dd5d2'
 
@@ -128,9 +128,10 @@ class Authorization:
         f1.pack(pady=5)
         f2 = Button(self.forum_list, text='Forum 2', command=lambda: self.forum_page('Forum 2'))
         f2.pack(pady=5)
-
-        add_button = Button(self.root, text='Add forum')
-        add_button.pack(pady=10)
+        f3 = Button(self.forum_list, text='Forum 3', command=lambda: self.forum_page('Forum 3'))
+        f3.pack(pady=5)
+        f4 = Button(self.forum_list, text='Forum 4', command=lambda: self.forum_page('Forum 4'))
+        f4.pack(pady=5)
 
         #   Кнопка выхода в окно авторизации
         logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
@@ -142,8 +143,20 @@ class Authorization:
         self.root.geometry('700x650')
         self.root.title(forum_name)
         self.root['bg'] = '#7dd5d2'
-        self.publication_list = Listbox(self.root, font='Sylfaen', height=10, width=400)
-        self.publication_list.pack(pady=20, padx=20)
+        # Фрейм для Listbox и скроллбара
+        frame = Frame(self.root)
+        frame.pack(pady=20, padx=20)
+
+        # Создаем Listbox с привязкой скроллбара
+        self.publication_list = Listbox(frame, font='Sylfaen', height=10, width=400)
+        self.publication_list.pack(side=LEFT, fill=BOTH, expand=True)
+
+        scrollbar = Scrollbar(frame, orient=VERTICAL)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        # Привязываем скроллбар к Listbox
+        self.publication_list.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.publication_list.yview)
 
         #   Загружаем сохранённые публикации
         if os.path.exists('published.txt'):
@@ -180,6 +193,7 @@ class Authorization:
         #   Поле ввода для добавления публикации
         self.entry = Entry(self.root)
         self.entry.pack(pady=10)
+        self.entry.focus()
 
         #   Кнопка добавления публикации
         self.enter_button = Button(self.root, text='Enter', command=lambda: (self.save_publication(self.entry.get(), forum_name), self.entry.delete(first=0, last=END)))
@@ -191,7 +205,7 @@ class Authorization:
 
         # Кнопка для добавления комментария к выбранной публикации
         self.comment_button = Button(self.root, text='Add Comment',
-                                command=lambda: (self.add_comment(self.comment_entry.get(), forum_name), self.comment_entry.delete(first=0, last=END)))
+                                command=lambda: (self.add_comment(self.comment_entry.get(), forum_name), self.comment_entry.delete(first=0, last=END), self.entry.focus()))
         self.comment_button.pack(pady=5)
 
         # Кнопка для лайков
@@ -212,8 +226,10 @@ class Authorization:
             index = selected[0]
             # Загружаем данные публикаций из файла
             prev_publ_dict = self.load_publications()
+            print(*prev_publ_dict.items())
 
             # Проходим по публикациям и находим нужную по индексу
+            flag = False
             count = 0
             for user, publications in prev_publ_dict.items():
                 for publication in publications:
@@ -223,8 +239,11 @@ class Authorization:
                             self.publication_list.delete(index)
                             self.publication_list.insert(index,
                                                          f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
+                            flag = True
                             break
                         count += (1 + len(publication['comments']))
+                if flag:
+                    break
             # Сохраняем обновлённые данные
             self.save_publications(prev_publ_dict)
 
@@ -251,6 +270,7 @@ class Authorization:
             prev_publ_dict = self.load_publications()
 
             # Проходим по публикациям и находим нужную по индексу
+            flag = False
             count = 0
             for user, publications in prev_publ_dict.items():
                 for publication in publications:
@@ -266,8 +286,11 @@ class Authorization:
                             for comment in publication['comments']:
                                 index += 1
                                 self.publication_list.insert(index, f'    Comment: {comment}')
+                            flag = True
                             break
                         count += (1 + len(publication['comments']))
+                if flag:
+                    break
 
             # Сохраняем обновлённые данные
             self.save_publications(prev_publ_dict)
