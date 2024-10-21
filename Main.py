@@ -3,6 +3,7 @@ import json
 import os
 import uuid
 from datetime import datetime
+from functools import partial
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo
 
@@ -12,7 +13,6 @@ from Publication import Publication
 class Authorization:
     def __init__(self, root):
         self.root = root
-        self.root.resizable(False, False)
         self.auth_init_ui()
         self.pass_dict = self.load_data()
 
@@ -89,41 +89,46 @@ class Authorization:
     def auth_init_ui(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+        self.root.resizable(False, False)
         self.root.title('Messenger')
-        self.root.geometry('450x600')
+        self.root.geometry('400x300')
         self.root['bg'] = '#7dd5d2'
 
-        Label(text='Login:', font='Sylfaen', background='#7dd5d2').place(x=30, y=205)
-        Label(text='Password:', font='Sylfaen', background='#7dd5d2').place(x=30, y=285)
+        Label(text='Login:', font='Sylfaen', background='#7dd5d2').place(x=30, y=35)
+        Label(text='Password:', font='Sylfaen', background='#7dd5d2').place(x=30, y=115)
 
         # Поля для ввода логина и пароля
-        self.login_entry = Entry(justify=LEFT, font='TimesNewRoman 11')
-        self.login_entry.place(height=40, width=150, x=30, y=240)
+        self.login_entry = Entry(justify=LEFT, font='Sylfaen 12')
+        self.login_entry.place(height=40, width=150, x=30, y=70)
         self.login_entry.focus()
 
-        self.pass_entry = Entry(justify=LEFT, font='TimesNewRoman 11')
-        self.pass_entry.place(height=40, width=150, x=30, y=320)
+        self.pass_entry = Entry(justify=LEFT, font='Sylfaen 12')
+        self.pass_entry.place(height=40, width=150, x=30, y=150)
 
         # Кнопки входа и регистрации
         Button(text='Sign in', font='Sylfaen', background='White',
-               command=lambda: self.sign_in(self.login_entry, self.pass_entry, self)).place(height=30, width=90, x=210, y=260)
+               command=lambda: self.sign_in(self.login_entry, self.pass_entry, self)).place(height=30, width=90, x=210, y=90)
         Button(text='Sign up', font='Sylfaen 12', background='White',
-               command=lambda: self.sign_up(self.login_entry, self.pass_entry)).place(height=25, width=80, x=215, y=310)
+               command=lambda: self.sign_up(self.login_entry, self.pass_entry)).place(height=25, width=80, x=215, y=140)
 
     def main_page_init_ui(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+        self.root.geometry('700x500')
         self.root.title('Forums')
         self.root['bg'] = '#7dd5d2'
 
         #   Создаем фрейм для добавления кнопок-форумов
-        self.forum_list = Frame(self.root, height=100, width=450)
+        self.forum_list = Frame(self.root, background='#7dd5d2', height=100, width=450)
         self.forum_list.pack(pady=20, padx=20)
 
         f1 = Button(self.forum_list, text='Forum 1', command=lambda: self.forum_page('Forum 1'))
-        f1.pack(fill='x')
+        f1.pack(pady=5)
         f2 = Button(self.forum_list, text='Forum 2', command=lambda: self.forum_page('Forum 2'))
-        f2.pack(fill='x')
+        f2.pack(pady=5)
+
+        add_button = Button(self.root, text='Add forum')
+        add_button.pack(pady=10)
 
         #   Кнопка выхода в окно авторизации
         logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
@@ -168,11 +173,11 @@ class Authorization:
         entry.pack(pady=10)
 
         #   Кнопка добавления публикации
-        enter_button = Button(self.root, text='Enter', command=lambda: self.save_publication(entry.get(), forum_name))
+        enter_button = Button(self.root, text='Enter', command=lambda: (self.save_publication(entry.get(), forum_name), entry.delete(first=0, last=END)))
         enter_button.pack(pady=0, padx=20)
 
         #   Кнопка возвращения в окно с выбором форума
-        back_button = Button(self.root, text='Back', command=self.main_page_init_ui)
+        back_button = Button(self.root, text='Back', command=partial(self.main_page_init_ui, 'ESC'))
         back_button.pack(pady=10)
 
         #   Кнопка выхода в окно авторизации

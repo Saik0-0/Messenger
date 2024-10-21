@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7e1846a-b338-4804-b8eb-1b19a16732bc" name="Changes" comment="step 10">
+    <list default="true" id="c7e1846a-b338-4804-b8eb-1b19a16732bc" name="Changes" comment="step 11">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Publication.py" beforeDir="false" afterPath="$PROJECT_DIR$/Publication.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/published.txt" beforeDir="false" afterPath="$PROJECT_DIR$/published.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/users.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +143,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728988757581</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="step 11">
+      <option name="closed" value="true" />
+      <created>1728998551284</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1728998551284</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -156,6 +165,7 @@
     <MESSAGE value="step 8" />
     <MESSAGE value="step 9" />
     <MESSAGE value="step 10" />
-    <option name="LAST_COMMIT_MESSAGE" value="step 10" />
+    <MESSAGE value="step 11" />
+    <option name="LAST_COMMIT_MESSAGE" value="step 11" />
   </component>
 </project>
