@@ -226,26 +226,37 @@ class Authorization:
             index = selected[0]
             # Загружаем данные публикаций из файла
             prev_publ_dict = self.load_publications()
-            print(*prev_publ_dict.items())
-
-            # Проходим по публикациям и находим нужную по индексу
-            flag = False
-            count = 0
+            prev_publ_tuples = []
             for user, publications in prev_publ_dict.items():
                 for publication in publications:
-                    if publication['forum_name'] == forum_name:
-                        if count == index:
-                            publication['likes'] += 1  # Увеличиваем количество лайков
-                            self.publication_list.delete(index)
-                            self.publication_list.insert(index,
-                                                         f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
-                            flag = True
-                            break
-                        count += (1 + len(publication['comments']))
-                if flag:
-                    break
-            # Сохраняем обновлённые данные
-            self.save_publications(prev_publ_dict)
+                    if forum_name == publication['forum_name']:
+                        prev_publ_tuples.append((
+                            user, publication['text'], publication['forum_name'],
+                            publication['time'], publication['likes'], publication['comments']
+                        ))
+            prev_publ = sorted(prev_publ_tuples, key=lambda x: x[3])
+
+            real_index = 0
+            for i, (user, text, _, time, likes, comments) in enumerate(prev_publ):
+                if real_index == index:
+                    # Найдена нужная публикация, увеличиваем лайки
+                    for orig_user, publications in prev_publ_dict.items():
+                        for publication in publications:
+                            if publication['text'] == text and publication['time'] == time and publication['likes'] == likes:
+                                # Увеличиваем количество лайков
+                                publication['likes'] += 1
+
+                                # Обновляем отображение в списке
+                                self.publication_list.delete(index)
+                                self.publication_list.insert(index,
+                                                             f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
+
+                                # Сохраняем обновленные данные
+                                self.save_publications(prev_publ_dict)
+                                return
+
+                # Увеличиваем счетчик строк, добавляем одну строку за публикацию и столько строк, сколько комментариев
+                real_index += (1 + len(comments))
 
     def load_publications(self):
         if os.path.exists('published.txt'):
@@ -268,32 +279,41 @@ class Authorization:
             index = selected[0]
             # Загружаем данные публикаций из файла
             prev_publ_dict = self.load_publications()
-
-            # Проходим по публикациям и находим нужную по индексу
-            flag = False
-            count = 0
+            prev_publ_dict = self.load_publications()
+            prev_publ_tuples = []
             for user, publications in prev_publ_dict.items():
                 for publication in publications:
-                    if publication['forum_name'] == forum_name:
-                        if count == index:
-                            self.publication_list.delete(index, index + len(publication['comments']))
+                    if forum_name == publication['forum_name']:
+                        prev_publ_tuples.append((
+                            user, publication['text'], publication['forum_name'],
+                            publication['time'], publication['likes'], publication['comments']
+                        ))
+            prev_publ = sorted(prev_publ_tuples, key=lambda x: x[3])
 
-                            publication['comments'].append(comment_text)  # Добавляем комментарий
+            # Проходим по публикациям и находим нужную по индексу
+            real_index = 0
+            for i, (user, text, _, time, likes, comments) in enumerate(prev_publ):
+                if real_index == index:
+                    # Найдена нужная публикация, увеличиваем лайки
+                    for orig_user, publications in prev_publ_dict.items():
+                        for publication in publications:
+                            if publication['forum_name'] == forum_name:
+                                if publication['text'] == text and publication['time'] == time and publication['likes'] == likes:
+                                    self.publication_list.delete(index, index + len(publication['comments']))
 
-                            self.publication_list.insert(index,
-                                                         f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
-                            # Отображаем комментарии
-                            for comment in publication['comments']:
-                                index += 1
-                                self.publication_list.insert(index, f'    Comment: {comment}')
-                            flag = True
-                            break
-                        count += (1 + len(publication['comments']))
-                if flag:
-                    break
+                                    publication['comments'].append(comment_text)  # Добавляем комментарий
 
-            # Сохраняем обновлённые данные
-            self.save_publications(prev_publ_dict)
+                                    self.publication_list.insert(index,
+                                                                 f"[{publication['time']}] {user}: {publication['text']} (Likes: {publication['likes']})")
+                                    # Отображаем комментарии
+                                    for comment in publication['comments']:
+                                        index += 1
+                                        self.publication_list.insert(index, f'    Comment: {comment}')
+                                        # Сохраняем обновленные данные
+                                    self.save_publications(prev_publ_dict)
+                                    return
+                # Увеличиваем счетчик строк, добавляем одну строку за публикацию и столько строк, сколько комментариев
+                real_index += (1 + len(comments))
 
 
 if __name__ == "__main__":
