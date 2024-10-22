@@ -240,7 +240,7 @@ class Authorization:
     def forum_page_init_ui(self, forum_name):
         for widget in self.root.winfo_children():
             widget.destroy()
-        self.root.geometry('700x650')
+        self.root.geometry('650x530')
         self.root.title(forum_name)
         self.root['bg'] = '#7dd5d2'
 
@@ -290,34 +290,38 @@ class Authorization:
                 for comment in comments:
                     self.publication_list.insert(END, f'    Comment: {comment}')
 
+        Label(text='Make a post:', background='#7dd5d2', font='Sylfaen').place(x=150, y=280)
+
         #   Поле ввода для добавления публикации
         self.entry = Entry(self.root)
-        self.entry.pack(pady=10)
+        self.entry.place(width=150, height=35, x=250, y=280)
         self.entry.focus()
 
         #   Кнопка добавления публикации
         self.enter_button = Button(self.root, text='Enter', command=lambda: (self.save_publication(self.entry.get(), forum_name), self.entry.delete(first=0, last=END)))
-        self.enter_button.pack(pady=0, padx=20)
+        self.enter_button.place(width=60, height=40, x=420, y=278)
+
+        Label(text='Choose post\nto add comment:', background='#7dd5d2', font='Sylfaen').place(x=134, y=317)
 
         # Поле для добавления комментария
         self.comment_entry = Entry(self.root)
-        self.comment_entry.pack(pady=10)
+        self.comment_entry.place(width=140, height=30, x=255, y=330)
 
         # Кнопка для добавления комментария к выбранной публикации
         self.comment_button = Button(self.root, text='Add Comment', command=lambda: (self.add_comment(self.comment_entry.get(), forum_name), self.comment_entry.delete(first=0, last=END), self.entry.focus()))
-        self.comment_button.pack(pady=5)
+        self.comment_button.place(width=120, height=30, x=420, y=330)
 
         # Кнопка для лайков
         self.like_button = Button(self.root, text='Like', command=lambda: self.like_post(forum_name))
-        self.like_button.pack(pady=5)
+        self.like_button.place(width=50, height=30, x=565, y=280)
 
         #   Кнопка возвращения в окно с выбором форума
         self.back_button = Button(self.root, text='Back', command=self.main_page_init_ui)
-        self.back_button.pack(pady=10)
+        self.back_button.place(width=60, height=40, x=20, y=278)
 
         #   Кнопка выхода в окно авторизации
         self.logout_button = Button(self.root, text='Logout', command=self.auth_init_ui)
-        self.logout_button.pack(pady=10)
+        self.logout_button.place(width=80, height=40, x=300, y=400)
 
 
 if __name__ == "__main__":
